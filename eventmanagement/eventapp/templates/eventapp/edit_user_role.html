@@ -1,0 +1,46 @@
+{% extends 'eventapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>Edit User Role</h4>
+                </div>
+                <div class="card-body">
+                    <h5>User: {{ user.username }}</h5>
+                    <p class="text-muted">{{ user.email }}</p>
+                    <p><strong>Current Role:</strong> <span class="badge bg-info">{{ user.profile.get_role_display }}</span></p>
+                    
+                    <hr>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Select New Role</label>
+                            <select name="role" class="form-select" required>
+                                <option value="attendee" {% if user.profile.role == 'attendee' %}selected{% endif %}>Attendee</option>
+                                <option value="organizer" {% if user.profile.role == 'organizer' %}selected{% endif %}>Organizer</option>
+                                <option value="admin" {% if user.profile.role == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>Role Permissions:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Admin:</strong> Full access, manage users, assign roles, monitor activity</li>
+                                <li><strong>Organizer:</strong> Create/manage events, view participants</li>
+                                <li><strong>Attendee:</strong> Register/login, view and register for events, update profile</li>
+                            </ul>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Update Role</button>
+                        <a href="{% url 'manage_users' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,335 @@
+{% extends 'eventapp/base.html' %}
+{% block content %}
+
+<style>
+  .dashboard-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 0;
+    margin-bottom: 40px;
+    border-radius: 0 0 50px 50px;
+  }
+  
+  .stats-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .stats-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #3498db;
+  }
+  
+  .modern-table {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  }
+  
+  .table-header {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    padding: 20px;
+  }
+  
+  .event-row {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+  }
+  
+  .event-row:hover {
+    background: #f8f9fa;
+    border-left-color: #3498db;
+    transform: translateX(5px);
+  }
+  
+  .action-btn {
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    margin: 0 3px;
+  }
+  
+  .btn-edit-modern {
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+    color: white;
+  }
+  
+  .btn-edit-modern:hover {
+    background: linear-gradient(45deg, #e67e22, #d35400);
+    transform: translateY(-2px);
+    color: white;
+  }
+  
+  .btn-delete-modern {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+  }
+  
+  .btn-delete-modern:hover {
+    background: linear-gradient(45deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+    color: white;
+  }
+  
+  .add-event-btn {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 30px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .add-event-btn:hover {
+    background: linear-gradient(45deg, #27ae60, #229954);
+    transform: translateY(-2px);
+    color: white;
+  }
+</style>
+
+<!-- Dashboard Hero -->
+<div class="dashboard-hero">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-5 fw-bold mb-3">🎯 
+          {% if user_role == 'admin' %}Admin{% elif user_role == 'organizer' %}Organizer{% else %}My{% endif %} Dashboard
+        </h1>
+        <p class="lead">
+          {% if user_role == 'admin' %}
+            Full system access - Manage users, events, and monitor activity
+          {% elif user_role == 'organizer' %}
+            Manage your events with style and efficiency
+          {% else %}
+            View your registered events and tickets
+          {% endif %}
+        </p>
+      </div>
+      <div class="col-lg-4 text-end">
+        {% if user_role == 'admin' %}
+          <a href="{% url 'manage_users' %}" class="add-event-btn text-decoration-none me-2">
+            <i class="bi bi-people me-2"></i>Manage Users
+          </a>
+        {% endif %}
+        {% if user_role == 'admin' or user_role == 'organizer' %}
+          <a href="{% url 'add_event' %}" class="add-event-btn text-decoration-none">
+            <i class="bi bi-plus-circle me-2"></i>Create Event
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mb-5">
+  {% if user_role == 'admin' or user_role == 'organizer' %}
+  <!-- Stats Section for Admin/Organizer -->
+  <div class="row mb-5">
+    <div class="col-md-3">
+      <div class="stats-card">
+        <div class="stats-number">{{ total_events }}</div>
+        <h5 class="text-muted">Total Events</h5>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <div class="stats-number">{{ total_registrations }}</div>
+        <h5 class="text-muted">Registrations</h5>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <div class="stats-number">${{ total_revenue }}</div>
+        <h5 class="text-muted">Revenue</h5>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <div class="stats-number">{{ events.count }}</div>
+        <h5 class="text-muted">Your Events</h5>
+      </div>
+    </div>
+  </div>
+
+  {% if user_role == 'admin' %}
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <h5><i class="bi bi-speedometer2"></i> Admin Quick Actions</h5>
+          <div class="btn-group mt-3" role="group">
+            <a href="{% url 'manage_users' %}" class="btn btn-outline-primary">
+              <i class="bi bi-people"></i> Manage Users
+            </a>
+            <a href="{% url 'activity_log' %}" class="btn btn-outline-info">
+              <i class="bi bi-activity"></i> Activity Log
+            </a>
+            <a href="{% url 'reports' %}" class="btn btn-outline-success">
+              <i class="bi bi-graph-up"></i> Reports
+            </a>
+            <a href="{% url 'view_events' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-calendar-event"></i> All Events
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Events Table -->
+  <div class="modern-table">
+    <div class="table-header">
+      <h3 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Your Events</h3>
+    </div>
+    
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="border-0 py-3"><i class="bi bi-type-bold me-2 text-primary"></i>Event Title</th>
+            <th class="border-0 py-3"><i class="bi bi-calendar-date me-2 text-primary"></i>Date</th>
+            <th class="border-0 py-3"><i class="bi bi-geo-alt me-2 text-primary"></i>Location</th>
+            <th class="border-0 py-3 text-center"><i class="bi bi-gear me-2 text-primary"></i>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ev in events %}
+            <tr class="event-row">
+              <td class="py-4">
+                <div class="fw-bold text-dark">{{ ev.title }}</div>
+                <small class="text-muted">{{ ev.description|truncatewords:8 }}</small>
+              </td>
+              <td class="py-4">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                  {{ ev.date|date:"M d, Y" }}
+                </span>
+              </td>
+              <td class="py-4">
+                <i class="bi bi-geo-alt text-muted me-1"></i>
+                {{ ev.location|default:"TBD" }}
+              </td>
+              <td class="py-4 text-center">
+                <a href="{% url 'edit_event' ev.id %}" class="action-btn btn-edit-modern text-decoration-none">
+                  <i class="bi bi-pencil-square me-1"></i>Edit
+                </a>
+                <a href="{% url 'delete_event' ev.id %}" class="action-btn btn-delete-modern text-decoration-none">
+                  <i class="bi bi-trash-fill me-1"></i>Delete
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="bi bi-calendar-x display-4 d-block mb-3 opacity-50"></i>
+                  <h5>No events created yet</h5>
+                  <p>Start by creating your first amazing event!</p>
+                  <a href="{% url 'add_event' %}" class="add-event-btn text-decoration-none mt-3 d-inline-block">
+                    <i class="bi bi-plus-circle me-2"></i>Create First Event
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <!-- Attendee Dashboard -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="stats-card">
+        <div class="stats-number">{{ registrations.count }}</div>
+        <h5 class="text-muted">Events Registered</h5>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="stats-card">
+        <div class="stats-number">{{ upcoming_events }}</div>
+        <h5 class="text-muted">Upcoming Events</h5>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modern-table">
+    <div class="table-header">
+      <h3 class="mb-0"><i class="bi bi-ticket me-2"></i>My Registrations</h3>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="border-0 py-3">Event</th>
+            <th class="border-0 py-3">Date</th>
+            <th class="border-0 py-3">Ticket</th>
+            <th class="border-0 py-3">Status</th>
+            <th class="border-0 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reg in registrations %}
+          <tr class="event-row">
+            <td class="py-4">
+              <div class="fw-bold">{{ reg.event.title }}</div>
+              <small class="text-muted">{{ reg.event.location }}</small>
+            </td>
+            <td class="py-4">{{ reg.event.date|date:"M d, Y" }}</td>
+            <td class="py-4"><code>{{ reg.ticket_number }}</code></td>
+            <td class="py-4">
+              <span class="badge bg-{% if reg.payment_status == 'completed' %}success{% elif reg.payment_status == 'pending' %}warning{% else %}danger{% endif %}">
+                {{ reg.get_payment_status_display }}
+              </span>
+            </td>
+            <td class="py-4 text-center">
+              {% if reg.payment_status == 'completed' %}
+              <a href="{% url 'ticket_view' reg.id %}" class="action-btn btn-edit-modern text-decoration-none">
+                <i class="bi bi-ticket-detailed me-1"></i>View Ticket
+              </a>
+              {% else %}
+              <a href="{% url 'payment' reg.id %}" class="action-btn btn-edit-modern text-decoration-none">
+                <i class="bi bi-credit-card me-1"></i>Complete Payment
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <div class="text-muted">
+                <i class="bi bi-ticket-x display-4 d-block mb-3 opacity-50"></i>
+                <h5>No registrations yet</h5>
+                <p>Browse events and register for your first event!</p>
+                <a href="{% url 'view_events' %}" class="add-event-btn text-decoration-none mt-3 d-inline-block">
+                  <i class="bi bi-search me-2"></i>Browse Events
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+{% endblock %}

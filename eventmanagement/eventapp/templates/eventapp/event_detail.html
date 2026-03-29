@@ -1,0 +1,63 @@
+{% extends 'eventapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>{{ event.title }}</h2>
+            <p class="text-muted">
+                <i class="bi bi-calendar"></i> {{ event.date }} 
+                {% if event.time %} at {{ event.time }}{% endif %}
+            </p>
+            <p class="text-muted">
+                <i class="bi bi-geo-alt"></i> {{ event.location }}
+            </p>
+            
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>Description</h5>
+                    <p>{{ event.description|default:"No description available." }}</p>
+                </div>
+            </div>
+            
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>Event Details</h5>
+                    <p><strong>Status:</strong> <span class="badge bg-info">{{ event.get_status_display }}</span></p>
+                    <p><strong>Capacity:</strong> {{ event.capacity }} attendees</p>
+                    <p><strong>Available Seats:</strong> {{ available_seats }}</p>
+                    <p><strong>Ticket Price:</strong> ${{ event.ticket_price }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    {% if user_registered %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i> You are registered for this event
+                        </div>
+                        <a href="{% url 'my_tickets' %}" class="btn btn-primary w-100">View My Tickets</a>
+                    {% elif event.is_full %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> Event is fully booked
+                        </div>
+                    {% elif event.status != 'scheduled' %}
+                        <div class="alert alert-warning">
+                            This event is {{ event.get_status_display|lower }}
+                        </div>
+                    {% else %}
+                        <h5>Register Now</h5>
+                        <p class="text-muted">{{ available_seats }} seats remaining</p>
+                        <form method="post" action="{% url 'register_for_event' event.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100">Register for Event</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

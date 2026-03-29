@@ -1,0 +1,426 @@
+{% extends 'eventapp/base.html' %}
+
+{% block content %}
+<style>
+  .confirm-container {
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .confirm-card {
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+    max-width: 600px;
+    width: 100%;
+    animation: slideInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .confirm-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .confirm-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+  
+  .confirm-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 3rem;
+    animation: bounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .confirm-header h2 {
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .confirm-header p {
+    opacity: 0.95;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .confirm-body {
+    padding: 3rem 2rem;
+  }
+  
+  .event-info {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease 0.2s both;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .event-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .event-title i {
+    color: #667eea;
+    font-size: 2rem;
+  }
+  
+  .info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding: 0.8rem;
+    background: white;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  .info-row:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .info-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  
+  .info-content {
+    flex: 1;
+  }
+  
+  .info-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  
+  .info-value {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    font-weight: 600;
+    margin-top: 0.3rem;
+  }
+  
+  .confirmation-message {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-left: 5px solid #ff6b6b;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: slideInLeft 0.6s ease 0.4s both;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .confirmation-message p {
+    margin: 0;
+    color: #c0392b;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    animation: fadeInUp 0.8s ease 0.6s both;
+  }
+  
+  .btn-confirm {
+    flex: 1;
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .btn-confirm:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(46, 204, 113, 0.4);
+    background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+  }
+  
+  .btn-confirm:active {
+    transform: translateY(-1px);
+  }
+  
+  .btn-cancel {
+    flex: 1;
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .btn-cancel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(127, 140, 141, 0.4);
+    background: linear-gradient(135deg, #7f8c8d 0%, #566573 100%);
+    color: white;
+  }
+  
+  .btn-cancel:active {
+    transform: translateY(-1px);
+  }
+  
+  .price-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+  }
+  
+  .capacity-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 12px;
+    padding: 1rem;
+    color: white;
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 600;
+  }
+  
+  @media (max-width: 768px) {
+    .confirm-card {
+      margin: 1rem;
+    }
+    
+    .confirm-body {
+      padding: 2rem 1.5rem;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+    }
+    
+    .event-title {
+      font-size: 1.4rem;
+    }
+  }
+</style>
+
+<div class="confirm-container">
+  <div class="confirm-card">
+    <!-- Header -->
+    <div class="confirm-header">
+      <div class="confirm-icon">
+        <i class="bi bi-ticket-perforated"></i>
+      </div>
+      <h2>Confirm Registration</h2>
+      <p>Review event details and confirm your registration</p>
+    </div>
+    
+    <!-- Body -->
+    <div class="confirm-body">
+      <!-- Event Information -->
+      <div class="event-info">
+        <div class="event-title">
+          <i class="bi bi-calendar-event"></i>
+          {{ event.title }}
+        </div>
+        
+        <!-- Date -->
+        <div class="info-row">
+          <div class="info-icon">
+            <i class="bi bi-calendar-date"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">📅 Date</div>
+            <div class="info-value">{{ event.date|date:"F d, Y" }}</div>
+          </div>
+        </div>
+        
+        <!-- Time -->
+        <div class="info-row">
+          <div class="info-icon">
+            <i class="bi bi-clock"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">⏰ Time</div>
+            <div class="info-value">{{ event.time|time:"g:i A"|default:"TBA" }}</div>
+          </div>
+        </div>
+        
+        <!-- Location -->
+        <div class="info-row">
+          <div class="info-icon">
+            <i class="bi bi-geo-alt"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">📍 Location</div>
+            <div class="info-value">{{ event.location|default:"Location TBD" }}</div>
+          </div>
+        </div>
+        
+        <!-- Ticket Price -->
+        <div class="info-row">
+          <div class="info-icon">
+            <i class="bi bi-tag"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">💰 Ticket Price</div>
+            <div class="info-value">
+              {% if event.ticket_price == 0 %}
+                <span class="badge bg-success">FREE</span>
+              {% else %}
+                ${{ event.ticket_price }}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Capacity -->
+        <div class="capacity-info">
+          <i class="bi bi-people me-2"></i>
+          Available Seats: <strong>{{ event.available_seats }}</strong> / {{ event.capacity }}
+        </div>
+      </div>
+      
+      <!-- Confirmation Message -->
+      <div class="confirmation-message">
+        <p>
+          <i class="bi bi-info-circle me-2"></i>
+          Are you sure you want to register for this event?
+        </p>
+      </div>
+      
+      <!-- Action Buttons -->
+      <form method="post" style="display: contents;">
+        {% csrf_token %}
+        <div class="action-buttons">
+          <button type="submit" class="btn-confirm">
+            <i class="bi bi-check-circle"></i>
+            Confirm Registration
+          </button>
+          <a href="{% url 'event_detail' event.id %}" class="btn-cancel">
+            <i class="bi bi-x-circle"></i>
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

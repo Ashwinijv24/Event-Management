@@ -1,0 +1,82 @@
+{% extends 'eventapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-activity"></i> System Activity Log</h2>
+        <a href="{% url 'manage_users' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Users
+        </a>
+    </div>
+    
+    <div class="row">
+        <!-- Recent Registrations -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-ticket"></i> Recent Registrations</h5>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% for reg in recent_registrations %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted">{{ reg.registered_at|timesince }} ago</small>
+                        <p class="mb-1"><strong>{{ reg.attendee.username }}</strong></p>
+                        <p class="mb-1 small">Event: {{ reg.event.title }}</p>
+                        <span class="badge bg-{% if reg.payment_status == 'completed' %}success{% elif reg.payment_status == 'pending' %}warning{% else %}danger{% endif %}">
+                            {{ reg.get_payment_status_display }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No recent registrations</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Events -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Recent Events</h5>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% for event in recent_events %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted">{{ event.created_at|timesince }} ago</small>
+                        <p class="mb-1"><strong>{{ event.title }}</strong></p>
+                        <p class="mb-1 small">By: {{ event.created_by.username }}</p>
+                        <p class="mb-1 small">Date: {{ event.date }}</p>
+                        <span class="badge bg-info">{{ event.get_status_display }}</span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No recent events</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Users -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-plus"></i> Recent Users</h5>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    {% for user in recent_users %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <small class="text-muted">{{ user.date_joined|timesince }} ago</small>
+                        <p class="mb-1"><strong>{{ user.username }}</strong></p>
+                        <p class="mb-1 small">{{ user.email }}</p>
+                        <span class="badge bg-{% if user.profile.role == 'admin' %}danger{% elif user.profile.role == 'organizer' %}success{% else %}info{% endif %}">
+                            {{ user.profile.get_role_display }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No recent users</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

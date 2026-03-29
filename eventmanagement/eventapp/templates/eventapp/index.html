@@ -1,0 +1,299 @@
+{% extends 'eventapp/base.html' %}
+{% block title %}EventSphere - Discover Amazing Events{% endblock %}
+
+{% block content %}
+<style>
+  .hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 100px 0;
+    margin: -2rem -15px 4rem -15px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,100 1000,0 1000,100"/></svg>');
+    background-size: cover;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    transition: all 0.4s ease;
+    border: none;
+    height: 100%;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: white;
+  }
+  
+  .event-preview-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    transition: all 0.4s ease;
+    border: none;
+    height: 100%;
+  }
+  
+  .event-preview-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  
+  .event-header {
+    background: var(--secondary-gradient);
+    color: white;
+    padding: 1.5rem;
+    position: relative;
+  }
+  
+  .event-body {
+    padding: 1.5rem;
+  }
+  
+  .stats-section {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 4rem 0;
+    margin: 4rem -15px;
+    text-align: center;
+  }
+  
+  .stat-item {
+    text-align: center;
+  }
+  
+  .stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    display: block;
+  }
+  
+  .stat-label {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+  
+  .cta-section {
+    background: var(--light-bg);
+    padding: 4rem 0;
+    margin: 4rem -15px;
+    text-align: center;
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container hero-content">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1 class="display-3 fw-bold mb-4">
+          Discover Amazing <span style="color: #ffd700;">Events</span>
+        </h1>
+        <p class="lead mb-4">
+          Connect with your community through unforgettable experiences. Create, discover, and join events that matter to you.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="{% url 'view_events' %}" class="btn btn-modern btn-warning-modern btn-lg">
+            <i class="bi bi-calendar-check me-2"></i>Browse Events
+          </a>
+          {% if user.is_authenticated %}
+            <a href="{% url 'add_event' %}" class="btn btn-modern btn-success-modern btn-lg">
+              <i class="bi bi-plus-circle me-2"></i>Create Event
+            </a>
+          {% else %}
+            <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">
+              <i class="bi bi-person-plus me-2"></i>Join Now
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-6 text-center">
+        <div class="d-inline-block p-4 bg-white bg-opacity-10 rounded-circle">
+          <i class="bi bi-calendar-event" style="font-size: 6rem; color: white;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Why Choose EventSphere?</h2>
+      <p class="lead text-muted">Everything you need to create and manage successful events</p>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-lightning-charge"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Easy to Use</h4>
+          <p class="text-muted">Create and manage events in minutes with our intuitive interface</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-people"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Community Driven</h4>
+          <p class="text-muted">Connect with like-minded people and build lasting relationships</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Secure & Reliable</h4>
+          <p class="text-muted">Your events and data are protected with enterprise-grade security</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Recent Events Section -->
+{% if events %}
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Upcoming Events</h2>
+      <p class="lead text-muted">Don't miss out on these amazing experiences</p>
+    </div>
+    
+    <div class="row g-4">
+      {% for event in events %}
+        <div class="col-lg-4 col-md-6">
+          <div class="event-preview-card">
+            <div class="event-header">
+              <h5 class="fw-bold mb-0">{{ event.title }}</h5>
+            </div>
+            <div class="event-body">
+              <p class="text-muted mb-3">{{ event.description|truncatewords:15|default:"Join us for an amazing experience!" }}</p>
+              
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-calendar-date text-primary me-2"></i>
+                <small class="text-muted">{{ event.date|date:"F d, Y" }}</small>
+              </div>
+              
+              {% if event.time %}
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-clock text-primary me-2"></i>
+                <small class="text-muted">{{ event.time|time:"g:i A" }}</small>
+              </div>
+              {% endif %}
+              
+              <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-geo-alt text-primary me-2"></i>
+                <small class="text-muted">{{ event.location|default:"Location TBD" }}</small>
+              </div>
+              
+              <div class="d-flex align-items-center">
+                <i class="bi bi-person-circle text-primary me-2"></i>
+                <small class="text-muted">By {{ event.created_by.username|default:"EventSphere" }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="text-center mt-5">
+      <a href="{% url 'view_events' %}" class="btn btn-modern btn-primary-modern btn-lg">
+        <i class="bi bi-arrow-right me-2"></i>View All Events
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="stat-item">
+          <span class="stat-number">{{ events.count|default:"0" }}+</span>
+          <span class="stat-label">Active Events</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-item">
+          <span class="stat-number">1000+</span>
+          <span class="stat-label">Happy Users</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-item">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">Cities Covered</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
+        <p class="lead text-muted mb-4">
+          Join thousands of event organizers who trust EventSphere to bring their communities together.
+        </p>
+        {% if not user.is_authenticated %}
+          <a href="{% url 'register' %}" class="btn btn-modern btn-primary-modern btn-lg me-3">
+            <i class="bi bi-person-plus me-2"></i>Sign Up Free
+          </a>
+          <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+          </a>
+        {% else %}
+          <a href="{% url 'add_event' %}" class="btn btn-modern btn-success-modern btn-lg">
+            <i class="bi bi-plus-circle me-2"></i>Create Your First Event
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

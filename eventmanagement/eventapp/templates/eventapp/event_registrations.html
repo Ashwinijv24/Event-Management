@@ -1,0 +1,94 @@
+{% extends 'eventapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Registrations for {{ event.title }}</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Total Registered</h5>
+                    <h3>{{ total_registered }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Paid</h5>
+                    <h3>{{ total_paid }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Available Seats</h5>
+                    <h3>{{ event.available_seats }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Total Revenue</h5>
+                    <h3>${{ total_revenue }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>Registration List</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Attendee</th>
+                        <th>Email</th>
+                        <th>Registration Date</th>
+                        <th>Payment Status</th>
+                        <th>Amount</th>
+                        <th>Checked In</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reg in registrations %}
+                    <tr>
+                        <td><code>{{ reg.ticket_number }}</code></td>
+                        <td>{{ reg.attendee.get_full_name|default:reg.attendee.username }}</td>
+                        <td>{{ reg.attendee.email }}</td>
+                        <td>{{ reg.registered_at|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="badge bg-{% if reg.payment_status == 'completed' %}success{% elif reg.payment_status == 'pending' %}warning{% else %}danger{% endif %}">
+                                {{ reg.get_payment_status_display }}
+                            </span>
+                        </td>
+                        <td>${{ reg.amount_paid }}</td>
+                        <td>
+                            {% if reg.checked_in %}
+                                <i class="bi bi-check-circle text-success"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle text-muted"></i>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No registrations yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

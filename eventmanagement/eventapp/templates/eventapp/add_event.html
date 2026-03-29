@@ -1,0 +1,349 @@
+{% extends 'eventapp/base.html' %}
+{% block title %}Create Event - EventSphere{% endblock %}
+
+{% block content %}
+<style>
+  .form-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .form-card {
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  
+  .form-header {
+    background: var(--success-gradient);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+  }
+  
+  .form-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float 8s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(180deg); }
+  }
+  
+  .form-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+  }
+  
+  .form-body {
+    padding: 3rem;
+  }
+  
+  .form-group {
+    margin-bottom: 2rem;
+  }
+  
+  .form-label {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .form-control, .form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 15px;
+    padding: 1rem 1.2rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+    background: white;
+  }
+  
+  .form-control::placeholder {
+    color: #a0aec0;
+  }
+  
+  textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  .btn-create {
+    background: var(--success-gradient);
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 3rem;
+    font-weight: 600;
+    color: white;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+  }
+  
+  .btn-create:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(79, 172, 254, 0.3);
+    color: white;
+  }
+  
+  .btn-cancel {
+    background: #6c757d;
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 3rem;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .btn-cancel:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    color: white;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .form-body {
+      padding: 2rem;
+    }
+  }
+  
+  .form-help {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+  }
+  
+  .required-field::after {
+    content: '*';
+    color: #ef4444;
+    margin-left: 0.25rem;
+  }
+</style>
+
+<div class="form-container">
+  <div class="form-card">
+    <!-- Header -->
+    <div class="form-header">
+      <div class="form-icon">
+        <i class="bi bi-plus-circle"></i>
+      </div>
+      <h2 class="fw-bold mb-2">Create Amazing Event</h2>
+      <p class="mb-0 opacity-90">Fill in the details to bring your event to life</p>
+    </div>
+    
+    <!-- Body -->
+    <div class="form-body">
+      <form method="post">
+        {% csrf_token %}
+        
+        <!-- Event Title -->
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}" class="form-label required-field">
+            <i class="bi bi-type text-primary"></i>
+            {{ form.title.label }}
+          </label>
+          {{ form.title }}
+          {% if form.title.errors %}
+            <div class="text-danger small mt-1">
+              {% for error in form.title.errors %}
+                <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="form-help">Give your event a catchy and descriptive title</div>
+        </div>
+        
+        <!-- Event Description -->
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}" class="form-label">
+            <i class="bi bi-card-text text-primary"></i>
+            {{ form.description.label }}
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <div class="text-danger small mt-1">
+              {% for error in form.description.errors %}
+                <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="form-help">Describe what makes your event special and exciting</div>
+        </div>
+        
+        <!-- Date and Time Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ form.date.id_for_label }}" class="form-label required-field">
+              <i class="bi bi-calendar-date text-primary"></i>
+              {{ form.date.label }}
+            </label>
+            {{ form.date }}
+            {% if form.date.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.date.errors %}
+                  <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="form-group">
+            <label for="{{ form.time.id_for_label }}" class="form-label">
+              <i class="bi bi-clock text-primary"></i>
+              {{ form.time.label }}
+            </label>
+            {{ form.time }}
+            {% if form.time.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.time.errors %}
+                  <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Location -->
+        <div class="form-group">
+          <label for="{{ form.location.id_for_label }}" class="form-label">
+            <i class="bi bi-geo-alt text-primary"></i>
+            {{ form.location.label }}
+          </label>
+          {{ form.location }}
+          {% if form.location.errors %}
+            <div class="text-danger small mt-1">
+              {% for error in form.location.errors %}
+                <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="form-help">Where will your event take place?</div>
+        </div>
+        
+        <!-- Reminder Settings -->
+        {% if form.reminder_enabled %}
+        <div class="form-group">
+          <div class="form-check mb-3">
+            {{ form.reminder_enabled }}
+            <label class="form-check-label" for="{{ form.reminder_enabled.id_for_label }}">
+              <i class="bi bi-bell text-primary me-2"></i>
+              Enable SMS/WhatsApp Reminders
+            </label>
+          </div>
+          
+          <div class="form-row" id="reminderSettings" style="display: none;">
+            <div class="form-group">
+              <label for="{{ form.reminder_phone.id_for_label }}" class="form-label">
+                <i class="bi bi-phone text-primary"></i>
+                {{ form.reminder_phone.label }}
+              </label>
+              {{ form.reminder_phone }}
+              {% if form.reminder_phone.errors %}
+                <div class="text-danger small mt-1">
+                  {% for error in form.reminder_phone.errors %}
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.reminder_channel.id_for_label }}" class="form-label">
+                <i class="bi bi-chat-dots text-primary"></i>
+                {{ form.reminder_channel.label }}
+              </label>
+              {{ form.reminder_channel }}
+              {% if form.reminder_channel.errors %}
+                <div class="text-danger small mt-1">
+                  {% for error in form.reminder_channel.errors %}
+                    <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Action Buttons -->
+        <div class="d-flex gap-3 mt-4">
+          <button type="submit" class="btn-create flex-fill">
+            <i class="bi bi-plus-circle me-2"></i>Create Event
+          </button>
+          <a href="{% url 'dashboard' %}" class="btn-cancel" style="flex: 0 0 auto;">
+            <i class="bi bi-x-circle me-2"></i>Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Show/hide reminder settings based on checkbox
+  const reminderEnabled = document.getElementById('{{ form.reminder_enabled.id_for_label }}');
+  const reminderSettings = document.getElementById('reminderSettings');
+  
+  if (reminderEnabled) {
+    reminderEnabled.addEventListener('change', function() {
+      reminderSettings.style.display = this.checked ? 'grid' : 'none';
+    });
+    
+    // Check initial state
+    if (reminderEnabled.checked) {
+      reminderSettings.style.display = 'grid';
+    }
+  }
+  
+  // Auto-resize textarea
+  const textarea = document.querySelector('textarea');
+  if (textarea) {
+    textarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+    });
+  }
+</script>
+
+{% endblock %}

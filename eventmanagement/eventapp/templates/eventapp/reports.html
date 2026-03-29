@@ -1,0 +1,173 @@
+{% extends 'eventapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Reports</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Report Type</label>
+                    <select name="type" class="form-select">
+                        <option value="registration" {% if report_type == 'registration' %}selected{% endif %}>Registration Report</option>
+                        <option value="revenue" {% if report_type == 'revenue' %}selected{% endif %}>Revenue Report</option>
+                        <option value="attendance" {% if report_type == 'attendance' %}selected{% endif %}>Attendance Report</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Event (Optional)</label>
+                    <select name="event" class="form-select">
+                        <option value="">All Events</option>
+                        {% for event in events %}
+                        <option value="{{ event.id }}" {% if selected_event.id == event.id %}selected{% endif %}>
+                            {{ event.title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if report_type == 'registration' and report_data %}
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5>Registration Report</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Total Registrations</h6>
+                            <h3>{{ report_data.total_registrations }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Completed Payments</h6>
+                            <h3>{{ report_data.completed_payments }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Pending Payments</h6>
+                            <h3>{{ report_data.pending_payments }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Failed Payments</h6>
+                            <h3>{{ report_data.failed_payments }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if report_type == 'revenue' and report_data %}
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5>Revenue Report</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Total Revenue</h6>
+                            <h3>${{ report_data.total_revenue }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Total Transactions</h6>
+                            <h3>{{ report_data.total_transactions }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h6>Revenue by Event</h6>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Revenue</th>
+                        <th>Transactions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in report_data.by_event %}
+                    <tr>
+                        <td>{{ item.registration__event__title }}</td>
+                        <td>${{ item.revenue }}</td>
+                        <td>{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if report_type == 'attendance' and report_data %}
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5>Attendance Report - {{ report_data.event.title }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Capacity</h6>
+                            <h3>{{ report_data.total_capacity }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Registered</h6>
+                            <h3>{{ report_data.total_registered }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Checked In</h6>
+                            <h3>{{ report_data.total_checked_in }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h6>Attendance Rate</h6>
+                            <h3>{{ report_data.attendance_rate|floatformat:1 }}%</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
