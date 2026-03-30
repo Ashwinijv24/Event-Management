@@ -9,11 +9,7 @@ SECRET_KEY = 'django-insecure-change-me'
 DEBUG = False   # change to False in production
 
 # FIXED (VERY IMPORTANT)
-ALLOWED_HOSTS = [
-    'event-management-1-36g9.onrender.com',
-    'localhost',
-    '127.0.0.1'
-]
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
